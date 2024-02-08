@@ -36,7 +36,7 @@ $(document).ready(function () {
           clickedLong,
           "tmax",
           temperatureUnit,
-          dateStart,
+          Start,
           dateEnd,
         );
         map.addSource("user-location", {
@@ -369,15 +369,15 @@ $(document).ready(function () {
       clickedLong,
       "tmax",
       temperatureUnit,
-      dateStart,
-      dateEnd,
+      Start,
+      End,
     );
   });
 
   // ========================================================= //
 
-  let dateStart = "";
-  let dateEnd = "";
+  let Start = "";
+  let End = "";
 
   let targetMonth = "";
   let yearForTargetMonth = "";
@@ -390,116 +390,96 @@ $(document).ready(function () {
     prcp: "https://uploads-ssl.webflow.com/653b0216cc0c5e60418f5f63/655ecbeeba9dcaecec6bbc7f_icon-precipitation-light-blue.svg",
   };
 
-  const formatDate = (date) => {
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, "0");
-    const day = date.getDate().toString().padStart(2, "0");
+const formatDateToUTC = (date) => {
+    const year = date.getUTCFullYear();
+    const month = (date.getUTCMonth() + 1).toString().padStart(2, "0");
+    const day = date.getUTCDate().toString().padStart(2, "0");
     return `${year}-${month}-${day}`;
-  };
+};
 
-  var currentDate = new Date();
-  var currentMonth = currentDate.getMonth() + 1;
+var currentDate = new Date();
+var currentMonth = currentDate.getUTCMonth() + 1;
 
-  // Display the next 6 months starting from the current month plus 1 month
-  for (var i = 1; i <= 6; i++) {
-    var nextMonth = (currentMonth + i) % 12 || 12; // Calculate the next month, handling overflow
-
-    // Get the month name in 3 letters
+for (var i = 1; i <= 6; i++) {
+    var nextMonth = (currentMonth + i) % 12 || 12;
     var monthName = new Date(
-      currentDate.getFullYear(),
-      nextMonth - 1,
-      1,
+        currentDate.getUTCFullYear(),
+        nextMonth - 1,
+        1,
     ).toLocaleString("default", { month: "short" });
 
-    // Get the year for each month separately
     var year =
-      currentMonth + i > 12
-        ? currentDate.getFullYear() + 1
-        : currentDate.getFullYear();
+        currentMonth + i > 12
+            ? currentDate.getUTCFullYear() + 1
+            : currentDate.getUTCFullYear();
 
-    // Create a new button for each month
     var monthButton = $('<button class="btntab">');
 
-    // Add data to the button
     monthButton.data("month", monthName);
     monthButton.data("year", year);
 
-    // Append the result with classes to the button
     monthButton.append(
-      '<span class="month">' +
-        monthName +
-        '</span> <span class="year">' +
-        year +
-        "</span>",
+        '<span class="month">' +
+            monthName +
+            '</span> <span class="year">' +
+            year +
+            "</span>",
     );
 
-    // Append the button to the months container
     $("#months-container").append(monthButton);
-  }
+}
 
-  // Log the startDate and endDate of the first month on page load
-  var firstMonth = $("#months-container button:first-child");
-  var firstMonthName = firstMonth.data("month");
-  var firstMonthYear = firstMonth.data("year");
-  var firstMonthIndex = monthIndex(firstMonthName);
+var firstMonth = $("#months-container button:first-child");
+var firstMonthName = firstMonth.data("month");
+var firstMonthYear = firstMonth.data("year");
+var firstMonthIndex = monthIndex(firstMonthName);
 
-  targetMonth = firstMonthIndex + 1;
-  yearForTargetMonth = firstMonthYear;
-  // Get the start date of the first month
-  var startDate = new Date(firstMonthYear, monthIndex(firstMonthName), 1);
-  var formattedStartDate = formatDate(startDate);
+targetMonth = firstMonthIndex + 1;
+yearForTargetMonth = firstMonthYear;
+var startDate = new Date(firstMonthYear, monthIndex(firstMonthName), 1);
+var formattedStartDate = formatDateToUTC(startDate);
 
-  // Get the end date (last day of the first month plus one day)
-  var lastDay = new Date(firstMonthYear, monthIndex(firstMonthName) + 1, 0);
-  lastDay.setDate(lastDay.getDate() + 1);
-  var formattedEndDate = formatDate(lastDay);
+var lastDay = new Date(firstMonthYear, monthIndex(firstMonthName) + 1, 0);
+lastDay.setDate(lastDay.getDate() + 1);
+var formattedEndDate = formatDateToUTC(lastDay);
 
-  // Display the result
-  dateStart = formattedStartDate;
-  dateEnd = formattedEndDate;
-  $("#months-container button:first").addClass("active");
+dateStart = formattedStartDate;
+dateEnd = formattedEndDate;
+$("#months-container button:first").addClass("active");
 
-  // Add click event for monthButton
-  $("#months-container").on("click", "button", function () {
+$("#months-container").on("click", "button", function () {
     var clickedMonth = $(this).data("month");
     var clickedYear = $(this).data("year");
-    // Remove the "active" class from all buttons
     $("#months-container button").removeClass("active");
-
-    // Add the "active" class to the currently clicked button
     $(this).addClass("active");
-    // Get the numerical index of the clicked month
     var clickedMonthIndex = monthIndex(clickedMonth);
     targetMonth = clickedMonthIndex + 1;
     yearForTargetMonth = clickedYear;
 
-    // Get the start date of the clicked month
     var startDate = new Date(clickedYear, monthIndex(clickedMonth), 1);
-    var formattedStartDate = formatDate(startDate);
+    var formattedStartDate = formatDateToUTC(startDate);
 
-    // Get the end date (last day of the clicked month plus one day)
     var lastDay = new Date(clickedYear, monthIndex(clickedMonth) + 1, 0);
     lastDay.setDate(lastDay.getDate() + 1);
-    var formattedEndDate = formatDate(lastDay);
+    var formattedEndDate = formatDateToUTC(lastDay);
 
-    // Display the result
     dateStart = formattedStartDate;
     dateEnd = formattedEndDate;
     $(".preloader").fadeIn("fast");
     fetchData(
-      clickedLat,
-      clickedLong,
-      "tmax",
-      temperatureUnit,
-      dateStart,
-      dateEnd,
+        clickedLat,
+        clickedLong,
+        "tmax",
+        temperatureUnit,
+        dateStart,
+        dateEnd,
     );
-  });
+});
 
-  // Helper function to get the index of the month
-  function monthIndex(month) {
-    return new Date(Date.parse(month + " 1, 2023")).getMonth();
-  }
+function monthIndex(month) {
+    return new Date(Date.parse(month + " 1, 2023")).getUTCMonth();
+}
+
 
   const getNormalsData = async (lat, lon, targetMonth, yearForTargetMonth) => {
     // Determine the units based on the temperatureUnit parameter
@@ -615,69 +595,70 @@ $(document).ready(function () {
     // Update the apiUrl with the units parameter
     const apiUrl = `https://api.weather2020.com/forecasts?lat=${lat}&lon=${lon}&units=${units}&start_date=${dateStart}&end_date=${dateEnd}`;
 
-    await getNormalsData(lat, lon, targetMonth, yearForTargetMonth).then(
-      (fetchResult) => {
+   await getNormalsData(lat, lon, targetMonth, yearForTargetMonth).then(
+    (fetchResult) => {
         $.ajax({
-          url: apiUrl,
-          type: "GET",
-          beforeSend: (xhr) => xhr.setRequestHeader("X-API-Key", apiKey),
-          success: ({ data }) => {
-            const calendarContainer = $("#calendar");
-            calendarContainer.empty();
-            $(".preloader").fadeOut("fast");
-            const monthsData = {};
+            url: apiUrl,
+            type: "GET",
+            beforeSend: (xhr) => xhr.setRequestHeader("X-API-Key", apiKey),
+            success: ({ data }) => {
+                const calendarContainer = $("#calendar");
+                calendarContainer.empty();
+                $(".preloader").fadeOut("fast");
+                const monthsData = {};
 
-            data.forEach((item) => {
-              const date = new Date(item.date);
-              const year = date.getFullYear();
-              const month = date.getMonth() + 1;
+                data.forEach((item) => {
+                    const date = new Date(item.date);
+                    const year = date.getUTCFullYear();
+                    const month = date.getUTCMonth() + 1;
 
-              const key = `${year}-${String(month).padStart(2, "0")}`;
-              if (!monthsData[key]) {
-                monthsData[key] = [];
-              }
-              monthsData[key].push({
-                day: date.getDate(),
-                tmax: item.tmax,
-                tmin: item.tmin,
-                snow: item.snow,
-                prcp: item.prcp,
-              });
-            });
+                    const key = `${year}-${String(month).padStart(2, "0")}`;
+                    if (!monthsData[key]) {
+                        monthsData[key] = [];
+                    }
+                    monthsData[key].push({
+                        day: date.getUTCDate(),
+                        tmax: item.tmax,
+                        tmin: item.tmin,
+                        snow: item.snow,
+                        prcp: item.prcp,
+                    });
+                });
 
-            for (let key in monthsData) {
-              if (monthsData.hasOwnProperty(key)) {
-                const yearMonth = key.split("-");
-                const year = parseInt(yearMonth[0]);
-                const month = parseInt(yearMonth[1]);
+                for (let key in monthsData) {
+                    if (monthsData.hasOwnProperty(key)) {
+                        const yearMonth = key.split("-");
+                        const year = parseInt(yearMonth[0]);
+                        const month = parseInt(yearMonth[1]);
 
-                if (month === targetMonth && year === yearForTargetMonth) {
-                  const monthName = new Date(year, month - 1, 1).toLocaleString(
-                    "default",
-                    {
-                      month: "long",
-                    },
-                  );
-                  const calendarDays = [
-                    "Sun",
-                    "Mon",
-                    "Tue",
-                    "Wed",
-                    "Thu",
-                    "Fri",
-                    "Sat",
-                  ];
-                  const daysLength = calendarDays.length;
+                        if (month === targetMonth && year === yearForTargetMonth) {
+                            const monthName = new Date(Date.UTC(year, month - 1, 1)).toLocaleString(
+                                "default", {
+                                    month: "long",
+                                },
+                            );
+                            const calendarDays = [
+                                "Sun",
+                                "Mon",
+                                "Tue",
+                                "Wed",
+                                "Thu",
+                                "Fri",
+                                "Sat",
+                            ];
+                            const daysLength = calendarDays.length;
 
-                  const monthTable = $('<table class="month-table"></table>');
-                  monthTable.append(
-                    `<thead>
-                          <tr><th colspan="${daysLength}">${monthName} ${year}</th></tr>
-                          <tr>${calendarDays
-                            .map((d) => `<th>${d}</th>`)
-                            .join("")}</tr>
-                        </thead>`,
-                  );
+                            const monthTable = $('<table class="month-table"></table>');
+                            monthTable.append(
+                                `<thead>
+                                    <tr><th colspan="${daysLength}">${monthName} ${year}</th></tr>
+                                    <tr>${calendarDays
+                                        .map((d) => `<th>${d}</th>`)
+                                        .join("")}</tr>
+                                </thead>`,
+                            );
+                            // Update to UTC Date
+
 
                   //const daysInMonth = new Date(year, month, 0).getDate();
                   //const firstDay = new Date(year, month - 1, 1).getDay();
