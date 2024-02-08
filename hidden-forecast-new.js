@@ -679,8 +679,14 @@ $(document).ready(function () {
                         </thead>`,
                   );
 
-                  const daysInMonth = new Date(year, month, 0).getDate();
-                  const firstDay = new Date(year, month - 1, 1).getDay();
+                  //const daysInMonth = new Date(year, month, 0).getDate();
+                  //const firstDay = new Date(year, month - 1, 1).getDay();
+
+                  // Inside the loop for creating calendar days
+                 const firstDay = new Date(Date.UTC(year, month - 1, 1)).getUTCDay();
+                 const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+
+                  
                   let dateCounter = 1;
 
                   const tbody = $("<tbody></tbody>");
