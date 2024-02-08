@@ -448,16 +448,18 @@ const monthName = new Date(
   targetMonth = firstMonthIndex + 1;
   yearForTargetMonth = firstMonthYear;
   // Get the start date of the first month
-  var startDate = new Date(firstMonthYear, monthIndex(firstMonthName), 1);
+  //var startDate = new Date(firstMonthYear, monthIndex(firstMonthName), 1);
   //var formattedStartDate = formatDate(startDate);
 
   // Get the end date (last day of the first month plus one day)
-  var lastDay = new Date(firstMonthYear, monthIndex(firstMonthName) + 1, 0);
-  lastDay.setDate(lastDay.getDate() + 1);
+  //var lastDay = new Date(firstMonthYear, monthIndex(firstMonthName) + 1, 0);
+  //lastDay.setDate(lastDay.getDate() + 1);
   //var formattedEndDate = formatDate(lastDay);
 
-  const formattedStartDate = new Date(firstMonthYear, monthIndex(firstMonthName), 1).toISOString();
-const formattedEndDate = new Date(firstMonthYear, monthIndex(firstMonthName) + 1, 0).toISOString();
+const formattedStartDate = `${firstMonthYear}-${String(monthIndex(firstMonthName) + 1).padStart(2, '0')}-01`;
+const lastDay = new Date(firstMonthYear, monthIndex(firstMonthName) + 1, 0);
+const formattedEndDate = `${firstMonthYear}-${String(monthIndex(firstMonthName) + 1).padStart(2, '0')}-${lastDay.getDate()}`;
+
 
 
   // Display the result
@@ -619,7 +621,7 @@ const formattedEndDate = new Date(firstMonthYear, monthIndex(firstMonthName) + 1
     const units = temperatureUnit === "°C" ? "metric" : "imperial";
     currentDataType = dataType;
     // Update the apiUrl with the units parameter
-    const apiUrl = `https://api.weather2020.com/forecasts?lat=${lat}&lon=${lon}&units=${units}&start_date=${dateStart}&end_date=${dateEnd}`;
+    const apiUrl = `https://api.weather2020.com/forecasts?lat=${lat}&lon=${lon}&units=${units}&start_date=${formattedStartDate}&end_date=${formattedEndDate}`;
 
     await getNormalsData(lat, lon, targetMonth, yearForTargetMonth).then(
       (fetchResult) => {
