@@ -370,13 +370,13 @@ $(document).ready(function () {
 
     // Update the apiUrl with the units parameter
     const apiUrl = `https://api.weather2020.com/normals?lat=${lat}&lon=${lon}&units=${units}&month=${month}&year=${year}`;
-
-    return await fetch(apiUrl, {
+    const vercelApiUrl = 'https://vercel-weather-2020-api.vercel.app/api/weather';
+    return await fetch(vercelApiUrl, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "X-API-Key": apiKey,
-      },
+      },  
+     body:JSON.stringfy({apiUrl})
     })
       .then(async (result) => result.json().then(({ data }) => data))
       .catch((err) => console.error(err));
@@ -448,9 +448,13 @@ $(document).ready(function () {
     await getNormalsData(lat, lon, targetMonth, yearForTargetMonth).then(
       (fetchResult) => {
         $.ajax({
-          url: apiUrl,
+          url: vercelApiUrl,
           type: "GET",
-          beforeSend: (xhr) => xhr.setRequestHeader("X-API-Key", apiKey),
+         
+beforeSend: function(xhr) {
+    xhr.setRequestHeader('Content-Type', 'application/json'); // Assuming JSON body
+    xhr.send(JSON.stringify({apiUrl})); // Replace yourBodyData with your actual data
+}
           success: ({ data }) => {
             const calendarContainer = $("#calendar");
             calendarContainer.empty();
